@@ -1,0 +1,18 @@
+AllCops:
+  Exclude:
+    - eyeq-metadata.gemspec
+  TargetRubyVersion: 2.0
+Documentation:
+  Enabled: false
+Style/RedundantReturn:
+  AllowMultipleReturnValues: true
+Metrics/MethodLength:
+  Max: 15
+GlobalVars:
+  Enabled: false
+WordArray:
+  Enabled: false
+CyclomaticComplexity:
+  Max: 20
+LineLength:
+  Max: 120
