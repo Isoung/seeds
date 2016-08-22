@@ -15,7 +15,7 @@ module Seeds
       success = Leaf.create_leaf(seed, data)
 
       @cache[seed_name.to_sym] = seed
-      File.open(get_seed_path(seed_name), 'w') { |file| file.write(Marshal.dump(seed)) }
+      update_file(seed, seed_name)
 
       return Response.create_response(false, 'Unable to create leaf') unless success
       Response.create_response(true, "Success leaf was created and added to #{seed_name}")
@@ -36,7 +36,7 @@ module Seeds
       success = Leaf.update_leaf(seed[:leaves], data, rules)
 
       @cache[seed_name.to_sym] = seed
-      File.open(get_seed_path(seed_name), 'w') { |file| file.write(Marshal.dump(seed)) }
+      update_file(seed, seed_name)
 
       return Response.create_response(false, 'No leaves contained specified rules') unless success
       Response.create_response(true, "Success leaves were updated in #{seed_name}")
@@ -48,7 +48,7 @@ module Seeds
       success = Leaf.delete_leaf(seed[:leaves], rules)
 
       @cache[seed_name.to_sym] = seed
-      File.open(get_seed_path(seed_name), 'w') { |file| file.write(Marshal.dump(seed)) }
+      update_file(seed, seed_name)
 
       return Response.create_response(false, 'No leaves contained specified rules') unless success
       Response.create_response(true, "Success leaves were deleted in #{seed_name}")
@@ -80,8 +80,8 @@ module Seeds
       seed_template
     end
 
-    def update_seed(seed)
-
+    def update_file(seed, seed_name)
+      File.open(get_seed_path(seed_name), 'w') { |file| file.write(Marshal.dump(seed)) }
     end
   end
 end

@@ -14,13 +14,11 @@ module Seeds
                          leaf_template
                        end
 
-      return true unless find_leaf(seed[:leaves], leaf_template[:uid]).nil?
-      false
+      true
     end
 
     def self.read_leaf(leaves, rules)
       return leaves unless rules.length >= 1
-      return find_leaf(leaves, rules[:uid]) unless rules[:uid].nil?
       search_for_leaves(leaves, rules.to_a)
     end
 
@@ -47,15 +45,13 @@ module Seeds
     # Private methods
 
     def self.search_for_leaves(leaves, rules)
-      result = leaves
-      rules.each do |rule|
-        result = result.select { |leaf| leaf[rule[0].to_sym] == rule[1] }
-      end
-      result
-    end
+      return leaves unless rules.length >= 1
 
-    def self.find_leaf(leaves, uid)
-      leaves.find { |leaf| leaf[:uid] == uid }
+      rule = rules.pop
+      results = leaves.select { |leaf| leaf[rule[0]] == rule[1] }
+
+      return search_for_leaves(results, rules) unless rules.empty? || results.empty?
+      results
     end
 
     def self.add_data(template, data, overwrite = false)
@@ -66,7 +62,6 @@ module Seeds
     end
 
     private_class_method :search_for_leaves
-    private_class_method :find_leaf
     private_class_method :add_data
   end
 end
