@@ -1,13 +1,14 @@
 require 'spec_helper'
 require 'FileUtils'
 
-describe Seeds::Seeds do
+describe Seeds do
   before(:all) do
-    @db = Seeds::Seeds.new
+    @db = Seeds.new
   end
 
   after(:all) do
-    # FileUtils.rm(Dir.pwd + '/seeds/test.seed') if File.exist? './seeds/test.seed'
+    FileUtils.rm(Dir.pwd + '/seeds/test.seed') if File.exist? './seeds/test.seed'
+    FileUtils.rm(Dir.pwd + '/seeds/testdb.seed') if File.exist? './seeds/testdb.seed'
   end
 
   it('should create a directory at specified location') do
@@ -33,6 +34,24 @@ describe Seeds::Seeds do
 
     @db.delete('test', test: 'delete-test')
     response = @db.read('test', test: 'delete-test')
-    expect(response[:results].empty?).to be(true)
+    expect(response[:results].nil?).to be(true)
+  end
+
+  it('should return false when trying to read a nonexistent seed') do
+    response = @db.read('does_not_exist')
+    expect(response[:success]).to be(false)
+    expect(response[:error]).to match('does_not_exist seed was not found')
+  end
+
+  it('should return false when no leaves found') do
+    response = @db.read('test', non_existent: true)
+    expect(response[:success]).to be(false)
+    expect(response[:error]).to match('No leaves found containing specified rules')
+  end
+
+  it('should be able to create a seed') do
+    response = @db.create_seed('testdb')
+    expect(response[:success]).to be(true)
+    expect((File.exist? './seeds/testdb.seed')).to be(true)
   end
 end
