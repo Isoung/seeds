@@ -1,5 +1,5 @@
 Gem::Specification.new do |spec|
-  spec.name          = 'seeds'
+  spec.name          = 'seeds-db'
   spec.version       = '1.1.0'
   spec.authors       = ['Isaiah Soung']
   spec.date          = '2016-08-09'
