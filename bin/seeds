@@ -1,0 +1,105 @@
+#!/usr/bin/env ruby
+
+require 'seeds'
+require 'optparse'
+
+options = {}
+begin
+  OptionParser.new do |opts|
+    opts.banner = 'Usage: seeds [-options]'
+
+    opts.on('-d', '-d directory', 'Sets seeds directory if directory is not ./seeds') do |arg|
+      options[:dir] = arg
+    end
+
+    opts.on('-c', '-c create', 'Creates an entry in specified seed') do |arg|
+      options[:action] = 'c' if options[:action].nil?
+      options[:seed] = arg
+    end
+
+    opts.on('-r', '-r read', 'Displays all entries in seeds directory') do |arg|
+      options[:action] = 'r' if options[:action].nil?
+      options[:seed] = arg
+    end
+
+    opts.on('-u', '-u update', 'Updates an entry/entries in specified seed') do |arg|
+      options[:action] = 'u' if options[:action].nil?
+      options[:seed] = arg
+    end
+
+    opts.on('-d', '-d create', 'Deletes an entry/entries in specified seed') do |arg|
+      options[:action] = 'd' if options[:action].nil?
+      options[:seed] = arg
+    end
+
+    opts.on('-n', '-n create', 'Creates a seed with specified name') do |arg|
+      options[:action] = 'n' if options[:action].nil?
+      options[:seed] = arg
+    end
+
+    opts.on('-m', '-m delete', 'Deletes a seed with specified name') do |arg|
+      options[:action] = 'm' if options[:action].nil?
+      options[:seed] = arg
+    end
+
+    opts.on('-w', '-w with data', 'Data to create/update leaf with') do |arg|
+      data = {}
+      split = arg.split(',')
+      split.each do |s|
+        key, value = s.split('=')
+        data[key.to_sym] = value
+      end
+      options[:with] = data
+    end
+
+    opts.on('-k', '-k constraints', 'Constraints for read/update/deletes') do |arg|
+      data = {}
+      split = arg.split(',')
+      split.each do |s|
+        key, value = s.split('=')
+        data[key.to_sym] = value
+      end
+      options[:con] = data
+    end
+  end.parse!
+rescue
+  puts 'No actions were specified. See a list of options with -h'
+end
+
+seeds = options[:dir].nil? ? Seeds.new : Seeds.new(options[:dir])
+
+case options[:action]
+when 'c'
+  response = options[:with].nil? ? seeds.create(options[:seed]) : seeds.create(options[:seed], options[:with])
+  puts response
+when 'r'
+  if options[:seed] == 'all'
+    Dir.foreach './seeds' do |seed|
+      next if seed == '.' || seed == '..'
+      response = seeds.read(seed.split('.seed')[0])
+      puts "\n#{seed} ------------------------------------------------------------------------"
+      puts response[:results]
+    end
+  else
+    response = seeds.read(options[:seed])[:results]
+    puts "#{options[:seed]} was not found" if response.nil?
+    puts response unless response.nil?
+  end
+when 'u'
+  seed_name = options[:seed]
+  with_opts = options[:with]
+
+  response = options[:con].nil? ? seeds.update(seed_name, with_opts) : seeds.update(seed_name, with_opts, options[:con])
+  puts response
+when 'd'
+  response = options[:con].nil? ? seeds.delete(options[:seed]) : seeds.delete(options[:seed], options[:con])
+  puts response
+when 'n'
+  response = seeds.create_seed(options[:seed])
+  puts response
+when 'm'
+  response = seeds.delete_seed(options[:seed])
+  puts response
+else
+  puts 'No actions were specified. See a list of options with -h'
+end

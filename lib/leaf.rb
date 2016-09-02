@@ -23,29 +23,32 @@ module Leaf
 
   def self.update_leaf(leaves, data, rules)
     results = rules.length >= 1 ? search_for_leaves(leaves, rules.to_a) : leaves
+    false unless results.length >= 1
+
     results.length.times do |i|
       add_data(leaves[i], data, true)
     end
-
-    false unless results.length >= 1
     true
   end
 
   def self.delete_leaf(leaves, rules)
-    results = rules.length >= 1 ? search_for_leaves(leaves, rules.to_a) : leaves
+    unless rules.length >= 1
+      leaves.clear
+      return true
+    end
+
+    results = search_for_leaves(leaves, rules.to_a)
+    false unless results.length >= 1
+
     results.each do |leaf|
       leaves.delete(leaf)
     end
-
-    false unless results.length >= 1
     true
   end
 
   # Private methods
 
   def self.search_for_leaves(leaves, rules)
-    return leaves unless rules.length >= 1
-
     rule = rules.pop
     results = leaves.select { |leaf| leaf[rule[0]] == rule[1] }
 

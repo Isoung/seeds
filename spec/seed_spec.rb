@@ -54,4 +54,14 @@ describe Seeds do
     expect(response[:success]).to be(true)
     expect((File.exist? './seeds/testdb.seed')).to be(true)
   end
+
+  it('should be able to delete a seed') do
+    response = @db.create_seed('seed2delete')
+    expect(response[:success]).to be(true)
+    expect((File.exist? './seeds/seed2delete.seed')).to be(true)
+
+    response = @db.delete_seed('seed2delete')
+    expect(response[:success]).to be(true)
+    expect((File.exist? './seeds/seed2delete.seed')).to be(false)
+  end
 end

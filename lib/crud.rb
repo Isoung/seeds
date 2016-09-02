@@ -60,6 +60,12 @@ class CRUD
     Response.create_response(true, "Success #{seed} was created as a seed")
   end
 
+  def delete_seed(seed)
+    return Response.create_response(false, 'Seed did not exist') unless File.exist? "#{@dir}/#{seed}.seed"
+    File.delete "#{@dir}/#{seed}.seed"
+    Response.create_response(true, 'Success seed was delete')
+  end
+
   private
 
   def get_seed_path(seed)

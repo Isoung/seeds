@@ -50,4 +50,11 @@ class Seeds
   def create_seed(seed)
     @crud.create_seed(seed)
   end
+
+  # Deletes a seed.
+  # @param seed [String] name of the seed to delete
+  # @return response [Hash] indicates success/failure
+  def delete_seed(seed)
+    @crud.delete_seed(seed)
+  end
 end
